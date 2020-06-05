@@ -48,6 +48,7 @@ spring:
       cache: false    #页面不加载缓存，修改即时生效
     redis:
       host: 127.0.0.1 #默认就是本地
+#      host: 192.168.10.233 #公司redis
       port: 6379
 
 
@@ -69,8 +70,8 @@ spring:
     proxy-target-class: true
   datasource:
     url: jdbc:oracle:thin:@192.168.137.200:1521/orcl
-    username: sjzmhhc
-    password: sjzmhhc
+    username: BJAQXHC
+    password: BJAQXHC
     driver-class-name: oracle.jdbc.OracleDriver
     maximum-pool-size: 30
 

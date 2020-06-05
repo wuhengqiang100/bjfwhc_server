@@ -112,7 +112,7 @@ public class SelectOptionController {
     public ResponseEty listOptionProduct(){
         ResponseEty responseEty=new ResponseEty();
         responseEty.setSuccess(20000);
-        responseEty.setAny("cartNumFirstOption",selectOptionComponent.getCartNumFirstSelectOption());//前缀字母option
+//        responseEty.setAny("cartNumFirstOption",selectOptionComponent.getCartNumFirstSelectOption());//前缀字母option
         return responseEty;
     }
 

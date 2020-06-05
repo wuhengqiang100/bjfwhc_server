@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.kexin</groupId>
-    <artifactId>sjzhc_server</artifactId>
+    <artifactId>bjfwhc_server</artifactId>
 <!--    <version>1</version>-->
     <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>sjzhc_server</name>
-    <description>Demo project for Spring Boot</description>
+    <name>bjfwhc_server</name>
+    <description>北京防伪核查网站后台</description>
 
     <repositories>
         <!--阿里云仓库-->

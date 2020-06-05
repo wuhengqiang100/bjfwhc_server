@@ -178,10 +178,10 @@ public class ShiroConfig {
         return new AuthRealm();
     }
 
-    @Bean
-    public CacheManager cacheManager() {
-        return new MemoryConstrainedCacheManager();
-    }
+//    @Bean
+//    public CacheManager cacheManager() {
+//        return new MemoryConstrainedCacheManager();
+//    }
 
     /**
      * cookie对象;
@@ -217,7 +217,7 @@ public class ShiroConfig {
     public SecurityManager securityManager() {
         DefaultWebSecurityManager sm = new DefaultWebSecurityManager();
         sm.setRealm(realm());
-        sm.setCacheManager(cacheManager());
+//        sm.setCacheManager(cacheManager());
         //注入记住我管理器
         sm.setRememberMeManager(rememberMeManager());
         //注入自定义sessionManager

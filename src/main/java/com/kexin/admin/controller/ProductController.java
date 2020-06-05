@@ -69,7 +69,7 @@ public class ProductController {
         }
         IPage<Products> productPage = productService.page(new Page<>(page,limit),productWrapper);
         data.setTotal(productPage.getTotal());
-        productPage.getRecords().forEach(r->r.setCartNumFirst(cartNumFirstService.getById(r.getCartnumFirstId())));//外键实体添加
+//        productPage.getRecords().forEach(r->r.setCartNumFirst(cartNumFirstService.getById(r.getCartnumFirstId())));//外键实体添加
         data.setItems(productPage.getRecords());
         productPageData.setData(data);
         systemLogService.saveMachineLog(token,"查询","查询了产品种类列表");

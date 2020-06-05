@@ -1,18 +1,33 @@
 package com.kexin.admin.component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kexin.admin.entity.vo.monitor.Monitor;
+import com.kexin.admin.entity.vo.redis.RedisMessage;
+import com.kexin.common.jackson.JacksonUtil;
+import com.kexin.common.util.DateUtil.DateUtil;
 import com.kexin.common.util.redis.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cglib.beans.BeanMap;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
 import java.util.Date;
+import java.util.Random;
 
+//@EnableScheduling
 @Component
 public class ScheduledComponent {
 
     @Autowired
     private RedisUtil redisUtil;
-
+    @Autowired
+    @Qualifier("redisTemplate")
+    RedisTemplate redisTemplate;//获取连接等操作
     //在一个特定的时间执行这个方法 Timer
 
     //cron表达式
@@ -28,10 +43,69 @@ public class ScheduledComponent {
             redisUtil.set("name", "看源码学redis"+new Date());
         System.out.println(redisUtil.get("name"));
     }*/
-    @Scheduled(cron = "0/2 * * * * ?")
-    public  void setRedis(){
-            redisUtil.set("name", "看源码学redis"+new Date());
-        System.out.println(redisUtil.get("name"));
-//        System.out.println("hello 你被定时执行了");
+    @Scheduled(cron = "0/3 * * * * ?")
+    public  void setRedis() throws ParseException {
+        Random rm = new Random();
+//        DateUtil.dateToString(new Date());
+        Monitor monitor1=new Monitor(
+                "卷轴"+rm.nextInt(100),"产品"+rm.nextInt(10),"模板"+rm.nextInt(10),
+                "班组"+rm.nextInt(10), DateUtil.dateToString(new Date())
+                ,DateUtil.dateToString(new Date()),10000,rm.nextInt(10000)+1,rm.nextInt(2000)+1,
+                rm.nextInt(2000)+1, (float) rm.nextFloat(),
+                "5000z",rm.nextInt(100),"设备"+rm.nextInt(100),rm.nextInt(2));
+        Monitor monitor2=new Monitor(
+                "卷轴"+rm.nextInt(100),"产品"+rm.nextInt(10),"模板"+rm.nextInt(10),
+                "班组"+rm.nextInt(10), DateUtil.dateToString(new Date())
+                ,DateUtil.dateToString(new Date()),10000,rm.nextInt(10000)+1,rm.nextInt(2000)+1,
+                rm.nextInt(2000)+1, (float) rm.nextFloat(),
+                "5000z",rm.nextInt(100),"设备"+rm.nextInt(100),rm.nextInt(2));
+        Monitor monitor3=new Monitor(
+                "卷轴"+rm.nextInt(100),"产品"+rm.nextInt(10),"模板"+rm.nextInt(10),
+                "班组"+rm.nextInt(10), DateUtil.dateToString(new Date())
+                ,DateUtil.dateToString(new Date()),10000,rm.nextInt(10000)+1,rm.nextInt(2000)+1,
+                rm.nextInt(2000)+1, (float) rm.nextFloat(),
+                "5000z",rm.nextInt(100),"设备"+rm.nextInt(100),rm.nextInt(2));
+        Monitor monitor4=new Monitor(
+                "卷轴"+rm.nextInt(100),"产品"+rm.nextInt(10),"模板"+rm.nextInt(10),
+                "班组"+rm.nextInt(10), DateUtil.dateToString(new Date())
+                ,DateUtil.dateToString(new Date()),10000,rm.nextInt(10000)+1,rm.nextInt(2000)+1,
+                rm.nextInt(2000)+1, (float) rm.nextFloat(),
+                "5000z",rm.nextInt(100),"设备"+rm.nextInt(100),rm.nextInt(2));
+        Monitor monitor5=new Monitor(
+                "卷轴"+rm.nextInt(100),"产品"+rm.nextInt(10),"模板"+rm.nextInt(10),
+                "班组"+rm.nextInt(10), DateUtil.dateToString(new Date())
+                ,DateUtil.dateToString(new Date()),10000,rm.nextInt(10000)+1,rm.nextInt(2000)+1,
+                rm.nextInt(2000)+1, (float) rm.nextFloat(),
+                "5000z",rm.nextInt(100),"设备"+rm.nextInt(100),rm.nextInt(2));
+        Monitor monitor6=new Monitor(
+                "卷轴"+rm.nextInt(100),"产品"+rm.nextInt(10),"模板"+rm.nextInt(10),
+                "班组"+rm.nextInt(10), DateUtil.dateToString(new Date())
+                ,DateUtil.dateToString(new Date()),10000,rm.nextInt(10000)+1,rm.nextInt(2000)+1,
+                rm.nextInt(2000)+1, (float) rm.nextFloat(),
+                "5000z",rm.nextInt(100),"设备"+rm.nextInt(100),rm.nextInt(2));
+        redisUtil.hmset("machine:1", BeanMap.create(monitor1));
+        redisUtil.hmset("machine:2", BeanMap.create(monitor2));
+        redisUtil.hmset("machine:3", BeanMap.create(monitor3));
+        redisUtil.hmset("machine:4", BeanMap.create(monitor4));
+        redisUtil.hmset("machine:5", BeanMap.create(monitor5));
+        redisUtil.hmset("machine:6", BeanMap.create(monitor6));
+
     }
+
+    @Scheduled(fixedRate = 2000) //间隔2s 通过StringRedisTemplate对象向redis消息队列cat频道发布消息
+    public void sendCatMessage() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        RedisMessage redisMessage=new RedisMessage(1,"1","设备1异常");
+        String json = mapper.writeValueAsString(redisMessage);
+
+        redisTemplate.convertAndSend("cat", json);
+    }
+
+    @Scheduled(fixedRate = 1000) //间隔1s 通过StringRedisTemplate对象向redis消息队列fish频道发布消息
+    public void sendFishMessage(){
+        redisTemplate.convertAndSend("fish","鱼");
+    }
+
+
 }
