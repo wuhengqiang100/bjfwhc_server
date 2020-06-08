@@ -3,8 +3,9 @@ package com.kexin.common.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kexin.admin.component.CatListener;
 import com.kexin.admin.component.FishListener;
+import com.kexin.admin.component.MachineAlertListener;
+import com.kexin.admin.entity.tables.Machine;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -35,25 +36,25 @@ public class RedisConfig extends CachingConfigurerSupport {
     @Bean
     //相当于xml中的bean
     RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
-                                            MessageListenerAdapter CatAdapter, MessageListenerAdapter FishAdapter) {
+                                            MessageListenerAdapter AlertAdapter) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         //订阅了一个叫chat 的通道
-        container.addMessageListener(CatAdapter, new PatternTopic("cat"));
-        container.addMessageListener(FishAdapter, new PatternTopic("fish"));
+        container.addMessageListener(AlertAdapter, new PatternTopic("machineAlert"));
+//        container.addMessageListener(FishAdapter, new PatternTopic("fish"));
         //这个container 可以添加多个 messageListener
         return container;
     }
 
     /**
      * 消息监听器适配器，绑定消息处理器
-     *
+     * 报警信息监听器
      * @param receiver
      * @return
      */
     @Bean
-    MessageListenerAdapter CatAdapter() {
-        return new MessageListenerAdapter(new CatListener());
+    MessageListenerAdapter AlertAdapter() {
+        return new MessageListenerAdapter(new MachineAlertListener());
     }
 
     /**
@@ -61,11 +62,11 @@ public class RedisConfig extends CachingConfigurerSupport {
      *
      * @param receiver
      * @return
-     */
-    @Bean
-    MessageListenerAdapter FishAdapter() {
-        return new MessageListenerAdapter(new FishListener());
-    }
+//     */
+//    @Bean
+//    MessageListenerAdapter FishAdapter() {
+//        return new MessageListenerAdapter(new FishListener());
+//    }
 
     /**
      * redis 读取内容的template

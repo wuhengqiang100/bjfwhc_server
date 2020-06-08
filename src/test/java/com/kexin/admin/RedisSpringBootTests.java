@@ -5,18 +5,25 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kexin.admin.component.ScheduledComponent;
 import com.kexin.admin.entity.pojo.User;
+import com.kexin.admin.entity.tables.MachineWarning;
 import com.kexin.admin.entity.vo.monitor.Monitor;
 import com.kexin.admin.entity.vo.redis.RedisMessage;
+import com.kexin.common.util.DateUtil.DateUtil;
 import com.kexin.common.util.redis.RedisUtil;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cglib.beans.BeanMap;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @SpringBootTest
 public class RedisSpringBootTests {
@@ -30,6 +37,22 @@ public class RedisSpringBootTests {
 
     @Autowired
     ScheduledComponent scheduledComponent;//定时组件
+
+    @Test
+    public void sendMachineAlert() throws JsonProcessingException, ParseException {
+        Random rm = new Random();
+        ObjectMapper mapper = new ObjectMapper();
+
+        RedisMessage redisMessage=new RedisMessage(1,String.valueOf(rm.nextInt(2)+1),"设备1异常", DateUtil.dateToString(new Date()));
+        String json = mapper.writeValueAsString(redisMessage);
+
+        MachineWarning machineWarning=new MachineWarning();
+        machineWarning.setMachineId(redisMessage.getMachineId());
+        machineWarning.setLogType(redisMessage.getLogType());
+        machineWarning.setNote(redisMessage.getNote());
+        machineWarning.setLogDate(DateUtil.stringToDate(redisMessage.getLogDate()));
+        redisTemplate.convertAndSend("machineAlert", json);
+    }
 
     @Test
     public  void jaksonTest() throws JsonProcessingException {

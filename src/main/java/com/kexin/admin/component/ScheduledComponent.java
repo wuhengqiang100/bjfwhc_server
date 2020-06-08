@@ -2,8 +2,10 @@ package com.kexin.admin.component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kexin.admin.entity.tables.MachineWarning;
 import com.kexin.admin.entity.vo.monitor.Monitor;
 import com.kexin.admin.entity.vo.redis.RedisMessage;
+import com.kexin.admin.mapper.MachineWarningMapper;
 import com.kexin.common.jackson.JacksonUtil;
 import com.kexin.common.util.DateUtil.DateUtil;
 import com.kexin.common.util.redis.RedisUtil;
@@ -15,6 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Random;
@@ -92,20 +95,29 @@ public class ScheduledComponent {
 
     }
 
-    @Scheduled(fixedRate = 2000) //间隔2s 通过StringRedisTemplate对象向redis消息队列cat频道发布消息
-    public void sendCatMessage() throws JsonProcessingException {
+    @Resource
+    MachineWarningMapper machineWarningMapper;//设备报警信息mapper
+
+    @Scheduled(fixedRate = 10000) //间隔2s 通过StringRedisTemplate对象向redis消息队列cat频道发布消息
+    public void sendCatMessage() throws JsonProcessingException, ParseException {
+        Random rm = new Random();
         ObjectMapper mapper = new ObjectMapper();
 
-        RedisMessage redisMessage=new RedisMessage(1,"1","设备1异常");
+        RedisMessage redisMessage=new RedisMessage(1,String.valueOf(rm.nextInt(2)+1),"设备1异常",DateUtil.dateToString(new Date()));
         String json = mapper.writeValueAsString(redisMessage);
 
-        redisTemplate.convertAndSend("cat", json);
+        MachineWarning machineWarning=new MachineWarning();
+        machineWarning.setMachineId(redisMessage.getMachineId());
+        machineWarning.setLogType(redisMessage.getLogType());
+        machineWarning.setNote(redisMessage.getNote());
+        machineWarning.setLogDate(DateUtil.stringToDate(redisMessage.getLogDate()));
+        redisTemplate.convertAndSend("machineAlert", json);
     }
 
-    @Scheduled(fixedRate = 1000) //间隔1s 通过StringRedisTemplate对象向redis消息队列fish频道发布消息
-    public void sendFishMessage(){
-        redisTemplate.convertAndSend("fish","鱼");
-    }
+//    @Scheduled(fixedRate = 1000) //间隔1s 通过StringRedisTemplate对象向redis消息队列fish频道发布消息
+//    public void sendFishMessage(){
+//        redisTemplate.convertAndSend("fish","鱼");
+//    }
 
 
 }
