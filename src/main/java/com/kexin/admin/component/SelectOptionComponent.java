@@ -51,6 +51,9 @@ public class SelectOptionComponent {
     @Resource
     AuditParameterMapper auditParameterMapper;//审核参数mapper
 
+    @Resource
+    DisplayPlatformMapper displayPlatformMapper;//大屏配置apper
+
 
     /**
      * 获取产品的selectOption
@@ -215,6 +218,25 @@ public class SelectOptionComponent {
             selectOption=new SelectOption();
             selectOption.setValue(r.getJudgeCheckTypeId());
             selectOption.setLabel(r.getJudgeCheckTypeName());
+            selectOptionList.add(selectOption);
+        }
+        return selectOptionList;
+    }
+
+    /**
+     * 获取大屏配置的selectOption
+     * @return
+     */
+    public List<SelectOption> getDisplayPlatformSelectOption(){
+        QueryWrapper<DisplayPlatform> displayPlatformQueryWrapper = new QueryWrapper<>();
+        displayPlatformQueryWrapper.eq("USE_FLAG",1);//启用状态
+        List<DisplayPlatform> displayPlatformList= displayPlatformMapper.selectList(displayPlatformQueryWrapper);
+        List<SelectOption> selectOptionList=new ArrayList<>(displayPlatformList.size());
+        SelectOption selectOption;
+        for (DisplayPlatform r : displayPlatformList) {
+            selectOption=new SelectOption();
+            selectOption.setValue(r.getDisplayPlatformId());
+            selectOption.setLabel(r.getDisplayPlatformName());
             selectOptionList.add(selectOption);
         }
         return selectOptionList;
