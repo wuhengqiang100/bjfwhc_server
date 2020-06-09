@@ -98,21 +98,21 @@ public class ScheduledComponent {
     @Resource
     MachineWarningMapper machineWarningMapper;//设备报警信息mapper
 
-    @Scheduled(fixedRate = 10000) //间隔2s 通过StringRedisTemplate对象向redis消息队列cat频道发布消息
-    public void sendCatMessage() throws JsonProcessingException, ParseException {
-        Random rm = new Random();
-        ObjectMapper mapper = new ObjectMapper();
-
-        RedisMessage redisMessage=new RedisMessage(1,String.valueOf(rm.nextInt(2)+1),"设备1异常",DateUtil.dateToString(new Date()));
-        String json = mapper.writeValueAsString(redisMessage);
-
-        MachineWarning machineWarning=new MachineWarning();
-        machineWarning.setMachineId(redisMessage.getMachineId());
-        machineWarning.setLogType(redisMessage.getLogType());
-        machineWarning.setNote(redisMessage.getNote());
-        machineWarning.setLogDate(DateUtil.stringToDate(redisMessage.getLogDate()));
-        redisTemplate.convertAndSend("machineAlert", json);
-    }
+//    @Scheduled(fixedRate = 10000) //间隔2s 通过StringRedisTemplate对象向redis消息队列cat频道发布消息
+//    public void sendCatMessage() throws JsonProcessingException, ParseException {
+//        Random rm = new Random();
+//        ObjectMapper mapper = new ObjectMapper();
+//
+//        RedisMessage redisMessage=new RedisMessage(1,String.valueOf(rm.nextInt(2)+1),"设备1异常",DateUtil.dateToString(new Date()));
+//        String json = mapper.writeValueAsString(redisMessage);
+//
+//        MachineWarning machineWarning=new MachineWarning();
+//        machineWarning.setMachineId(redisMessage.getMachineId());
+//        machineWarning.setLogType(redisMessage.getLogType());
+//        machineWarning.setNote(redisMessage.getNote());
+//        machineWarning.setLogDate(DateUtil.stringToDate(redisMessage.getLogDate()));
+//        redisTemplate.convertAndSend("machineAlert", json);
+//    }
 
 //    @Scheduled(fixedRate = 1000) //间隔1s 通过StringRedisTemplate对象向redis消息队列fish频道发布消息
 //    public void sendFishMessage(){

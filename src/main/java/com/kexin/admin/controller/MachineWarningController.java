@@ -46,6 +46,7 @@ public class MachineWarningController {
                                        @RequestParam(value = "sort")String sort,
                                        @RequestParam(value = "logState",defaultValue = "")Integer logState, //处理状态
                                        @RequestParam(value = "machineId",defaultValue = "") Integer machineId,
+                                       @RequestParam(value = "operatorId",defaultValue = "") Integer operatorId,
                                         @RequestHeader(value="token",required = false) Integer token,
                                        ServletRequest request){
 //        Map map = WebUtils.getParametersStartingWith(request, "s_");
@@ -63,9 +64,10 @@ public class MachineWarningController {
             machineWarningWrapper.eq("LOG_STATE",logState);
         }
         if (machineId!=null){
-            machineWarningWrapper.like("MACHINE_ID",machineId);
+            machineWarningWrapper.eq("MACHINE_ID",machineId);
+        }if (operatorId!=null){
+            machineWarningWrapper.eq("OPERATOR_ID",operatorId);
         }
-
         IPage<MachineWarning> machineWarningPage = machineWarningService.page(new Page<>(page,limit),machineWarningWrapper);
         machineWarningPage.getRecords().forEach(r->{
                     r.setMachine(machineService.getById(r.getMachineId()));
@@ -93,6 +95,7 @@ public class MachineWarningController {
         if(machineWarning == null){
             return ResponseEty.failure("报警信息不存在");
         }
+        machineWarning.setOperatorId(token);
         machineWarningService.dealMachineWarning(machineWarning);
         Machine machine=machineService.getById(machineWarning.getMachineId());
         systemLogService.saveMachineLog(token,"处理","处理了"+machine.getMachineName()+"的异常");

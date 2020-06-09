@@ -163,4 +163,16 @@ public class SelectOptionController {
     }
 
 
+    @PostMapping("machineWarningDeal")
+    @ResponseBody
+    @SysLog("获取报警处理页面的查询条件")
+    public ResponseEty listOptionMachineWarningDeal(){
+        ResponseEty responseEty=new ResponseEty();
+        responseEty.setSuccess(20000);
+        responseEty.setAny("machineOption",selectOptionComponent.getMachineSelectOption());//设备下拉option
+        responseEty.setAny("operatorOption",selectOptionComponent.getOperatorSelectOption());//工序下拉option
+        return responseEty;
+    }
+
+
 }

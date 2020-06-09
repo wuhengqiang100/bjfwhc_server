@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -83,11 +84,15 @@ public class MachineWarningServiceImpl extends ServiceImpl<MachineWarningMapper,
         baseMapper.deleteById(machineWarning.getLogId());
     }
 
+    /**
+     * 处理报警信息,设置状态为已处理
+     * @param machineWarning
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void dealMachineWarning(MachineWarning machineWarning) {
-
-        machineWarning.setLogState(1);//设置处理完成
+        machineWarning.setLogState(ConstantEnum.DEAL_STATE);//设置处理完成
+        machineWarning.setDealDate(new Date());
         baseMapper.updateById(machineWarning);
     }
 }
